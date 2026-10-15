@@ -33,6 +33,15 @@ Matriz de confusão do notebook 01 (linhas = real, colunas = previsto):
 
 Nos dois casos a acurácia de treino chega a ~100%, mas no paciente novo a rede acerta quase todas as janelas normais (recall de 97%) e **perde a maior parte das crises**. Há forte sobreajuste ao treino e grande variabilidade entre pacientes, o que mostra por que a divisão por paciente é a avaliação mais realista.
 
+## Diagnóstico e baseline (passos 1 a 16)
+
+O notebook `02_explorar_chbmit.ipynb` termina com 16 passos de diagnóstico, avaliados com leave-one-patient-out (os scripts estão em [`experimentos/`](experimentos); detalhes em [`docs/resultados_lopo.md`](docs/resultados_lopo.md)). Principais achados:
+
+- Uma regressão logística com 23 números (log-amplitude por canal) atinge AUC médio de 0,875 no LOPO, igual ou melhor que a CNN (0,863). Com características clássicas extras chega a ~0,90.
+- A CNN vai bem em 5 de 7 pacientes (AUC 0,94–0,99). O `chb06` fica no nível do acaso: as crises dele não aumentam a amplitude, ao contrário dos outros seis pacientes.
+- Nenhuma das sete variações da CNN testadas (GAP, normalização, filtro, aumento de dados, validação, híbrido, residual) superou o baseline de amplitude.
+- O limiar de decisão ideal varia muito entre pacientes (0,0025 a 0,97), então é preciso calibrar por paciente.
+
 ## Como executar
 
 ```bash
@@ -44,7 +53,8 @@ jupyter notebook
 
 - Foram usados apenas 7 a 8 pacientes (`chb01` a `chb08`) e um único paciente de teste, então os números têm alta incerteza.
 - Poucas janelas normais por arquivo (até 50) e classes desbalanceadas entre pacientes.
-- Resultados de exploração, sem validação cruzada entre pacientes.
+- Os resultados das tabelas acima são de exploração, com um único paciente de teste. A validação cruzada entre pacientes (LOPO) está nos passos 4 a 16 do notebook.
+- Falta medir falsos alarmes por hora em gravação contínua; a especificidade é calculada em janelas normais amostradas.
 
 ## Projeto relacionado
 
